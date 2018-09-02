@@ -300,7 +300,7 @@ class Font2Image(object):
 
 # 注意，chinese_labels里面的映射关系是：（ID：汉字）
 def get_label_dict():
-    f=open('./chinese_labels','r')
+    f=open('./chinese_labels','rb')
     label_dict = pickle.load(f)
     f.close()
     return label_dict

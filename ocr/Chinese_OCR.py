@@ -4,7 +4,7 @@
 # top 1 accuracy 0.99826 top 5 accuracy 0.99989
 
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "4"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 import random
 import tensorflow.contrib.slim as slim
 import time
@@ -16,8 +16,8 @@ from PIL import Image
 import cv2
 from tensorflow.python.ops import control_flow_ops
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+# reload(sys)
+# sys.setdefaultencoding('utf-8')
 
 logger = logging.getLogger('Training a chinese write char recognition')
 logger.setLevel(logging.INFO)
@@ -45,7 +45,7 @@ tf.app.flags.DEFINE_string('log_dir', './log', 'the logging dir')
 
 tf.app.flags.DEFINE_boolean('restore', False, 'whether to restore from checkpoint')
 tf.app.flags.DEFINE_boolean('epoch', 1, 'Number of epoches')
-tf.app.flags.DEFINE_boolean('batch_size', 128, 'Validation batch size')
+tf.app.flags.DEFINE_integer('batch_size', 128, 'Validation batch size')
 tf.app.flags.DEFINE_string('mode', 'validation', 'Running mode. One of {"train", "valid", "test"}')
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
@@ -108,7 +108,7 @@ def build_graph(top_k):
     images = tf.placeholder(dtype=tf.float32, shape=[None, 64, 64, 1], name='image_batch')
     labels = tf.placeholder(dtype=tf.int64, shape=[None], name='label_batch')
     is_training = tf.placeholder(dtype=tf.bool, shape=[], name='train_flag')
-    with tf.device('/gpu:5'):
+    with tf.device(tf.test.gpu_device_name()):
         # network: conv2d->max_pool2d->conv2d->max_pool2d->conv2d->max_pool2d->conv2d->conv2d->
         # max_pool2d->fully_connected->fully_connected
         #给slim.conv2d和slim.fully_connected准备了默认参数：batch_norm
@@ -320,12 +320,12 @@ def binary_pic(name_list):
         GrayImage=cv2.cvtColor(temp_image,cv2.COLOR_BGR2GRAY) 
         ret,thresh1=cv2.threshold(GrayImage,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
         single_name = image.split('t/')[1]
-        print single_name
+        print(single_name)
         cv2.imwrite('../data/tmp/'+single_name,thresh1)
 
 # 获取汉字label映射表
 def get_label_dict():
-    f=open('./chinese_labels','r')
+    f=open('./chinese_labels','rb')
     label_dict = pickle.load(f)
     f.close()
     return label_dict
@@ -397,7 +397,7 @@ def main(_):
         print ('=====================OCR RESULT=======================\n')
         # 打印出所有识别出来的结果（取top 1）
         for i in range(len(final_reco_text)):
-           print final_reco_text[i], 
+           print(final_reco_text[i], )
 
 if __name__ == "__main__":
     tf.app.run()
