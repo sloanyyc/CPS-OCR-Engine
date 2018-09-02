@@ -31,7 +31,7 @@ tf.app.flags.DEFINE_boolean('random_flip_up_down', False, "Whether to random fli
 tf.app.flags.DEFINE_boolean('random_brightness', True, "whether to adjust brightness")
 tf.app.flags.DEFINE_boolean('random_contrast', True, "whether to random constrast")
 
-tf.app.flags.DEFINE_integer('charset_size', 3755, "Choose the first `charset_size` characters only.")
+tf.app.flags.DEFINE_integer('charset_size', 93, "Choose the first `charset_size` characters only.")
 tf.app.flags.DEFINE_integer('image_size', 64, "Needs to provide same value as in training.")
 tf.app.flags.DEFINE_boolean('gray', True, "whether to change the rbg to gray")
 tf.app.flags.DEFINE_integer('max_steps', 16002, 'the max training steps ')
@@ -126,7 +126,7 @@ def build_graph(top_k):
             max_pool_4 = slim.max_pool2d(conv3_5, [2, 2], [2, 2], padding='SAME', scope='pool4')
 
             flatten = slim.flatten(max_pool_4)
-            fc1 = slim.fully_connected(slim.dropout(flatten, keep_prob), 1024,
+            fc1 = slim.fully_connected(slim.dropout(flatten, keep_prob), 1000,
                                        activation_fn=tf.nn.relu, scope='fc1')
             logits = slim.fully_connected(slim.dropout(fc1, keep_prob), FLAGS.charset_size, activation_fn=None,
                                           scope='fc2')
@@ -199,9 +199,10 @@ def train():
         logger.info(':::Training Start:::')
         try:
             i = 0
+            start_time = time.time()
             while not coord.should_stop():
                 i += 1
-                start_time = time.time()
+                # start_time = time.time()
                 train_images_batch, train_labels_batch = sess.run([train_images, train_labels])
                 feed_dict = {graph['images']: train_images_batch,
                              graph['labels']: train_labels_batch,
@@ -211,11 +212,12 @@ def train():
                     [graph['train_op'], graph['loss'], graph['merged_summary_op'], graph['global_step']],
                     feed_dict=feed_dict)
                 train_writer.add_summary(train_summary, step)
-                end_time = time.time()
-                logger.info("the step {0} takes {1} loss {2}".format(step, end_time - start_time, loss_val))
+                # end_time = time.time()
+                # logger.info("the step {0} takes {1} loss {2}".format(step, end_time - start_time, loss_val))
                 if step > FLAGS.max_steps:
                     break
                 if step % FLAGS.eval_steps == 1:
+                    end_time = time.time()
                     test_images_batch, test_labels_batch = sess.run([test_images, test_labels])
                     feed_dict = {graph['images']: test_images_batch,
                                  graph['labels']: test_labels_batch,
@@ -225,10 +227,12 @@ def train():
                                                            feed_dict=feed_dict)
                     if step > 300:
                         test_writer.add_summary(test_summary, step)
-                    logger.info('===============Eval a batch=======================')
-                    logger.info('the step {0} test accuracy: {1}'
-                                .format(step, accuracy_test))
-                    logger.info('===============Eval a batch=======================')
+                    logger.info("this steps {0} tacks {1} loss {2}".format(step, end_time-start_time, loss_val))
+
+                    # logger.info('===============Eval a batch=======================')
+                    logger.info('the step {0} test accuracy: {1}'.format(step, accuracy_test))
+                    # logger.info('===============Eval a batch=======================')
+                    start_time = time.time()
                 if step % FLAGS.save_steps == 1:
                     logger.info('Save the ckpt of {0}'.format(step))
                     saver.save(sess, os.path.join(FLAGS.checkpoint_dir, model_name),
@@ -325,7 +329,7 @@ def binary_pic(name_list):
 
 # 获取汉字label映射表
 def get_label_dict():
-    f=open('./chinese_labels','rb')
+    f=open('./en_dict','rb')
     label_dict = pickle.load(f)
     f.close()
     return label_dict
@@ -397,7 +401,7 @@ def main(_):
         print ('=====================OCR RESULT=======================\n')
         # 打印出所有识别出来的结果（取top 1）
         for i in range(len(final_reco_text)):
-           print(final_reco_text[i], )
+           print(final_reco_text[i], end=' ')
 
 if __name__ == "__main__":
     tf.app.run()
