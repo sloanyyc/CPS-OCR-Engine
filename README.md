@@ -1,5 +1,9 @@
 # CPS-OCR-Engine
-An awesome OCR engine developed by SYSU DeepDriving Lab
+forked An awesome OCR engine developed by SYSU DeepDriving Lab
+
+## 修改如下：
+支持 python3.5
+修改运行环境，gpu cuda版本限制
 
 一个基于深度学习的文字识别系统，支持3755个（一级字库）的印刷体汉字识别。
 
