@@ -18,7 +18,7 @@ python gen_printed_char.py --out_dir ./dataset --font_dir ./chinese_fonts --widt
 ```
 合成效果
 <div align="center">
-<img src="./404.png" height="400px" width="800px" alt="图片说明" >
+<img src="./images/404.png" height="400px" width="800px" alt="图片说明" >
 </div>
 
 ### 训练
@@ -39,23 +39,23 @@ python Chinese_OCR.py --mode=validation
 
 ### 效果
 <div align="center">
-<img src="./418.png" height="260px" width="400px" alt="图片说明" >
-<img src="./417.png" height="260px" width="400px" alt="图片说明" >
+<img src="./images/418.png" height="260px" width="400px" alt="图片说明" >
+<img src="./images/417.png" height="260px" width="400px" alt="图片说明" >
 </div>
 
 
 
 我从某篇论文中截图一小段文字，并做了单字切割，送入模型进行OCR预测。
 <div align="center">
-<img src="./410.png" height="200px" width="400px" alt="图片说明" >
-<img src="./407.png" height="200px" width="400px" alt="图片说明" >
+<img src="./images/410.png" height="200px" width="400px" alt="图片说明" >
+<img src="./images/407.png" height="200px" width="400px" alt="图片说明" >
 </div>
 
 
 
 识别结果全部正确！
 <div align="center">
-<img src="./408.png" height="180px" width="1000px" alt="图片说明" >
+<img src="./images/408.png" height="180px" width="1000px" alt="图片说明" >
 </div>
 
 
