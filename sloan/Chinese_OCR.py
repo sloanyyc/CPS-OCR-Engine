@@ -402,7 +402,7 @@ def main(_):
         print ('=====================OCR RESULT=======================\n')
         # 打印出所有识别出来的结果（取top 1）
         for i in range(len(final_reco_text)):
-           print final_reco_text[i], 
+           print(final_reco_text[i])
 
 if __name__ == "__main__":
     tf.app.run()

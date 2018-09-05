@@ -118,14 +118,14 @@ for font_name in os.listdir(font_dir):
   if font_check.do(path_font_file):
     verified_font_paths.append(path_font_file)
     fontDrawImage.append(FontDrawImage(path_font_file))
-
+print(fontDrawImage)
 shutil.rmtree('dataset')
 for c in range(33, 127):
   os.makedirs('dataset/train/%05d'%(c-33))
   os.makedirs('dataset/test/%05d'%(c-33))
   cnt = 0
   for x in range(0,10):
-    for y in range(0, 20):
+    for y in range(0, len(fontDrawImage)):
       img = fontDrawImage[y].do(str(chr(c)))
       img = img.rotate(random.randint(-15, 15))
       data = list(img.getdata())
