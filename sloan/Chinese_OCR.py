@@ -31,7 +31,7 @@ tf.app.flags.DEFINE_boolean('random_flip_up_down', False, "Whether to random fli
 tf.app.flags.DEFINE_boolean('random_brightness', True, "whether to adjust brightness")
 tf.app.flags.DEFINE_boolean('random_contrast', True, "whether to random constrast")
 
-tf.app.flags.DEFINE_integer('charset_size', 93, "Choose the first `charset_size` characters only.")
+tf.app.flags.DEFINE_integer('charset_size', 94, "Choose the first `charset_size` characters only.")
 tf.app.flags.DEFINE_integer('image_size', 64, "Needs to provide same value as in training.")
 tf.app.flags.DEFINE_boolean('gray', True, "whether to change the rbg to gray")
 tf.app.flags.DEFINE_integer('max_steps', 16002, 'the max training steps ')
@@ -43,7 +43,7 @@ tf.app.flags.DEFINE_string('train_data_dir', './dataset/train/', 'the train data
 tf.app.flags.DEFINE_string('test_data_dir', './dataset/test/', 'the test dataset dir')
 tf.app.flags.DEFINE_string('log_dir', './log', 'the logging dir')
 
-tf.app.flags.DEFINE_boolean('restore', False, 'whether to restore from checkpoint')
+tf.app.flags.DEFINE_boolean('restore', True, 'whether to restore from checkpoint')
 tf.app.flags.DEFINE_boolean('epoch', 1, 'Number of epoches')
 tf.app.flags.DEFINE_integer('batch_size', 128, 'Validation batch size')
 tf.app.flags.DEFINE_string('mode', 'validation', 'Running mode. One of {"train", "valid", "test"}')
@@ -63,6 +63,7 @@ class DataIterator:
             if root < truncate_path:
                 self.image_names += [os.path.join(root, file_path) for file_path in file_list]
         random.shuffle(self.image_names) # 打乱
+        # print('image_names', self.image_names)
         # 例如image_name为./train/00001/2.png，提取00001就是其label
         self.labels = [int(file_name[len(data_dir):].split(os.sep)[0]) for file_name in self.image_names]
 
@@ -212,8 +213,8 @@ def train():
                     [graph['train_op'], graph['loss'], graph['merged_summary_op'], graph['global_step']],
                     feed_dict=feed_dict)
                 train_writer.add_summary(train_summary, step)
-                # end_time = time.time()
-                # logger.info("the step {0} takes {1} loss {2}".format(step, end_time - start_time, loss_val))
+                end_time = time.time()
+                logger.info("the step {0} takes {1} loss {2}".format(step, end_time - start_time, loss_val))
                 if step > FLAGS.max_steps:
                     break
                 if step % FLAGS.eval_steps == 1:
@@ -329,7 +330,7 @@ def binary_pic(name_list):
 
 # 获取汉字label映射表
 def get_label_dict():
-    f=open('./en_dict','rb')
+    f=open('./my_labs','rb')
     label_dict = pickle.load(f)
     f.close()
     return label_dict
@@ -401,7 +402,7 @@ def main(_):
         print ('=====================OCR RESULT=======================\n')
         # 打印出所有识别出来的结果（取top 1）
         for i in range(len(final_reco_text)):
-           print(final_reco_text[i], end=' ')
+           print final_reco_text[i], 
 
 if __name__ == "__main__":
     tf.app.run()

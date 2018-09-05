@@ -28,7 +28,7 @@ class dataAugmentation(object):
 
     @classmethod 
     def add_noise(cls,img):
-        for i in range(20): #添加点噪声
+        for i in range(10): #添加点噪声
             temp_x = np.random.randint(0,img.shape[0])
             temp_y = np.random.randint(0,img.shape[1])
             img[temp_x][temp_y] = 255
@@ -36,13 +36,13 @@ class dataAugmentation(object):
 
     @classmethod
     def add_erode(cls,img):
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))    
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(2, 2))    
         img = cv2.erode(img,kernel) 
         return img
 
     @classmethod
     def add_dilate(cls,img):
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(3, 3))    
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT,(2, 2))    
         img = cv2.dilate(img,kernel) 
         return img
 
@@ -55,7 +55,7 @@ class dataAugmentation(object):
             if self.dilate and random.random()<0.5:
                 im = self.add_dilate(im)
             elif self.erode:
-                im = self.add_erode(im)    
+                im = self.add_erode(im)
             aug_list.append(im)
         return aug_list
 
@@ -143,7 +143,8 @@ class PreprocessResizeKeepRatioFillBG(object):
             return True
         if width * 3 < height:
             return True
-        return False
+        # return False
+        return True
 
     @classmethod
     def put_img_into_center(cls, img_large, img_small, ):
@@ -237,7 +238,7 @@ class FontCheck(object):
             for i, char in enumerate(self.lang_chars):
                 img = Image.new("RGB", (width, height), "black") # 黑色背景
                 draw = ImageDraw.Draw(img)
-                font = ImageFont.truetype(font_path, int(width * 0.9),)
+                font = ImageFont.truetype(font_path, int(height * 0.9),)
                 # 白色字体
                 draw.text((0, 0), char, (255, 255, 255),
                           font=font)
@@ -269,7 +270,7 @@ class Font2Image(object):
         # 黑色背景
         img = Image.new("RGB", (self.width, self.height), "black")
         draw = ImageDraw.Draw(img)
-        font = ImageFont.truetype(font_path, int(self.width * 0.7),)
+        font = ImageFont.truetype(font_path, int(self.height * 0.9),)
         # 白色字体
         draw.text((0, 0), char, (255, 255, 255),
                   font=font)
@@ -300,7 +301,7 @@ class Font2Image(object):
 
 # 注意，chinese_labels里面的映射关系是：（ID：汉字）
 def get_label_dict():
-    f=open('./en_dict','rb')
+    f=open('./my_labs','rb')
     label_dict = pickle.load(f)
     f.close()
     print('label_dict len: ', len(label_dict))
@@ -308,37 +309,38 @@ def get_label_dict():
 
 def args_parse():
     #解析输入参数
+    # python gen_printed_char.py --out_dir ./dataset --font_dir ./chinese_fonts --width 30 --height 30 --margin 4 --rotate 30 --rotate_step 1
     parser = argparse.ArgumentParser(
         description=description, formatter_class=RawTextHelpFormatter)
     parser.add_argument('--out_dir', dest='out_dir',
-                        default=None, required=True,
+                        default='./dataset', required=False,
                         help='write a caffe dir')
     parser.add_argument('--font_dir', dest='font_dir',
-                        default=None, required=True,
+                        default='../ocr/chinese_fonts/', required=False,
                         help='font dir to to produce images')
     parser.add_argument('--test_ratio', dest='test_ratio',
                         default=0.2, required=False,
                         help='test dataset size')
     parser.add_argument('--width', dest='width',
-                        default=None, required=True,
+                        default=30, required=False,
                         help='width')
     parser.add_argument('--height', dest='height',
-                        default=None, required=True,
+                        default=30, required=False,
                         help='height')
     parser.add_argument('--no_crop', dest='no_crop',
                         default=True, required=False,
                         help='', action='store_true')
     parser.add_argument('--margin', dest='margin',
-                        default=0, required=False,
+                        default=10, required=False,
                         help='', )
     parser.add_argument('--rotate', dest='rotate',
-                        default=0, required=False,
+                        default=3, required=False,
                         help='max rotate degree 0-45')
     parser.add_argument('--rotate_step', dest='rotate_step',
-                        default=0, required=False,
+                        default=1, required=False,
                         help='rotate step for the rotate angle')
     parser.add_argument('--need_aug', dest='need_aug',
-                        default=False, required=False,
+                        default=True, required=False,
                         help='need data augmentation', action='store_true')   
     args = vars(parser.parse_args()) 
     return args
